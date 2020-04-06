@@ -1,0 +1,63 @@
+---
+title: "Title"
+author: "Sharon Allman, Diego Mamanche Castellano & Ke-Li Chiu"
+date: "08/04/2020"
+output:
+  pdf_document:
+    latex_engine: xelatex
+abstract: "The abstract"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = FALSE, cache = TRUE)## R Markdown
+```
+
+```{r echo=FALSE, include=FALSE, message=FALSE}
+#Set up the environment
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(reshape2)
+library(stringr)
+library(knitr)
+library(tidyverse)
+library(broom)
+library(huxtable)
+library(jtools)
+#setwd("~/Experimental Design for Data Science/ProblemSet4")
+```
+
+```{r echo=FALSE, include=FALSE, message=FALSE}
+###Upload datasets
+alcohol_crime_data <- read.csv("P01_Age_Profile_of_Arrest_Rates_1979-2006.csv")
+```
+
+```{r echo=FALSE}
+colnames(alcohol_crime_data)
+```
+```{r echo=FALSE}
+alcohol_crime_data <- alcohol_crime_data %>% filter(days_to_21 %in% (-730:730))
+alcohol_crime_data %>% 
+  ggplot(aes(x = days_to_21,
+             y = violent_r)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 %in% (0:730)), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 %in% (-1:-730) ), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "Days to 21",
+       y = "Violent Crime Arrest Rates")
+```
+
+```{r echo=FALSE}
+alcohol_crime_data <- 
+  alcohol_crime_data %>% 
+  mutate(twentyone_and_over = if_else(days_to_21 > 0, 0, 1)) 
+
+lm(violent_r ~ days_to_21 + twentyone_and_over, data = alcohol_crime_data) %>% 
+  tidy()
+```
