@@ -29,15 +29,17 @@ library(jtools)
 ```
 
 ```{r echo=FALSE, include=FALSE, message=FALSE}
-###Upload datasets
+### Upload and read datasets
 alcohol_crime_data <- read.csv("P01_Age_Profile_of_Arrest_Rates_1979-2006.csv")
+### Filter dataset to contain data only from age 19 to 22 
+alcohol_crime_data <- alcohol_crime_data %>% filter(days_to_21 %in% (-730:730))
 ```
 
 ```{r echo=FALSE}
 colnames(alcohol_crime_data)
 ```
 ```{r echo=FALSE}
-alcohol_crime_data <- alcohol_crime_data %>% filter(days_to_21 %in% (-730:730))
+### Violent crime rate regression discontinuity graph
 alcohol_crime_data %>% 
   ggplot(aes(x = days_to_21,
              y = violent_r)) +
@@ -54,10 +56,10 @@ alcohol_crime_data %>%
 ```
 
 ```{r echo=FALSE}
+### Violent crime rate Linear regression
 alcohol_crime_data <- 
   alcohol_crime_data %>% 
   mutate(twentyone_and_over = if_else(days_to_21 > 0, 0, 1)) 
-
 lm(violent_r ~ days_to_21 + twentyone_and_over, data = alcohol_crime_data) %>% 
   tidy()
 ```
