@@ -44,15 +44,91 @@ alcohol_crime_data %>%
   ggplot(aes(x = days_to_21,
              y = violent_r)) +
   geom_point(alpha = 0.2) +
-  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 %in% (0:730)), 
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 >= 0), 
               method='lm',
               color = "black") +
-  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 %in% (-1:-730) ), 
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 < 0), 
               method='lm',
               color = "black") +
   theme_minimal() +
   labs(x = "Days to 21",
        y = "Violent Crime Arrest Rates")
+```
+```{r echo=FALSE}
+### Rape crime arrest rate regression discontinuity graph
+alcohol_crime_data %>% 
+  ggplot(aes(x = days_to_21,
+             y = rape_r)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "Days to 21",
+       y = "Rape crime arrest rate")
+
+### Murder crime arrest rate regression discontinuity graph
+alcohol_crime_data %>% 
+  ggplot(aes(x = days_to_21,
+             y = murder_r)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "Days to 21",
+       y = "Murder crime arrest rate")
+
+### Manslaughter crime arrest rate regression discontinuity graph
+alcohol_crime_data %>% 
+  ggplot(aes(x = days_to_21,
+             y = manslaughter_r)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "Days to 21",
+       y = "Manslaughter crime arrest rate")
+
+### Robbery crime arrest rate regression discontinuity graph
+alcohol_crime_data %>% 
+  ggplot(aes(x = days_to_21,
+             y = robbery_r)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "Days to 21",
+       y = "Robbery crime arrest rate")
+
+### Aggregaved assault crime arrest rate regression discontinuity graph
+alcohol_crime_data %>% 
+  ggplot(aes(x = days_to_21,
+             y = aggravated_assault_r)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = alcohol_crime_data %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "Days to 21",
+       y = "Aggregaved assault crime arrest rate")
 ```
 
 ```{r echo=FALSE}
@@ -63,3 +139,47 @@ alcohol_crime_data <-
 lm(violent_r ~ days_to_21 + twentyone_and_over, data = alcohol_crime_data) %>% 
   tidy()
 ```
+
+```{r echo=FALSE}
+### Rape crime rate Linear regression
+alcohol_crime_data <- 
+  alcohol_crime_data %>% 
+  mutate(twentyone_and_over = if_else(days_to_21 < 0, 0, 1 )) 
+lm(rape_r ~ days_to_21 + twentyone_and_over, data = alcohol_crime_data) %>% 
+  tidy()
+```
+```{r echo=FALSE}
+### Murder crime rate Linear regression
+alcohol_crime_data <- 
+  alcohol_crime_data %>% 
+  mutate(twentyone_and_over = if_else(days_to_21 < 0, 0, 1)) 
+lm(murder_r ~ days_to_21 + twentyone_and_over, data = alcohol_crime_data) %>% 
+  tidy()
+```
+
+```{r echo=FALSE}
+### Manslaughter crime rate Linear regression
+alcohol_crime_data <- 
+  alcohol_crime_data %>% 
+  mutate(twentyone_and_over = if_else(days_to_21 < 0, 0, 1)) 
+lm(manslaughter_r ~ days_to_21 + twentyone_and_over, data = alcohol_crime_data) %>% 
+  tidy()
+```
+
+```{r echo=FALSE}
+### Robbery crime rate Linear regression
+alcohol_crime_data <- 
+  alcohol_crime_data %>% 
+  mutate(twentyone_and_over = if_else(days_to_21 < 0, 0, 1)) 
+lm(robbery_r ~ days_to_21 + twentyone_and_over, data = alcohol_crime_data) %>% 
+  tidy()
+```
+```{r echo=FALSE}
+### Assault crime rate Linear regression
+alcohol_crime_data <- 
+  alcohol_crime_data %>% 
+  mutate(twentyone_and_over = if_else(days_to_21 < 0, 0, 1)) 
+lm(aggravated_assault_r ~ days_to_21 + twentyone_and_over, data = alcohol_crime_data) %>% 
+  tidy()
+```
+
