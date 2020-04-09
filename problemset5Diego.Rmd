@@ -1,0 +1,224 @@
+---
+title: "ProblemSet5"
+author: "Diego Mamanche Castellanos"
+date: "04/04/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE}
+#import libraries
+library(broom)
+library(tidyverse)
+
+
+setwd("~/Experimental Design for Data Science/ProblemSet5")
+
+```
+
+
+```{r}
+drinking <- read.csv("P01 Age Profile of Arrest Rates 1979-2006.csv")
+drinking <- janitor::clean_names(drinking) 
+
+head(drinking)
+```
+
+```{r}
+drinking_19_to_23 <- filter(drinking, days_to_21 > -730 & days_to_21 < 730)
+
+drinking_19_to_23 %>% 
+  ggplot(aes(x = days_to_21,
+             y = sex_offenses_r)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = drinking_19_to_23 %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = drinking_19_to_23 %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "felony cases")
+```
+
+```{r} 
+drinking_19_to_23 <- filter(drinking, days_to_21 > -730 & days_to_21 < 730)
+
+drinking_19_to_23 %>% 
+  ggplot(aes(x = days_to_21,
+             y = violent_r)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = drinking_19_to_23 %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = drinking_19_to_23 %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "felony cases")
+```
+
+
+```{r}
+drinking <- 
+  drinking %>% 
+  mutate(under_21 = if_else(days_to_21 < 0, 0, 1)) 
+
+lm(felony ~ days_to_21 + under_21, data = drinking) %>% 
+  tidy()
+```
+
+```{r}
+
+# input Stata file
+#library(foreign)
+#mydata <- read.dta("gavi.dta")
+
+```
+
+
+```{r}
+violent_cases <- select(drinking_19_to_23, days_to_21, murder, manslaughter, rape, robbery, aggravated_assault, ot_assault)
+
+violent_cases
+
+#Plot murder cases
+violent_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = murder)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "murder cases")
+
+#Plot manslaughter cases
+violent_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = manslaughter)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "manslaughter cases")
+
+#Plot rape cases
+violent_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = rape)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "rape cases")
+
+#Plot robbery cases
+violent_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = robbery)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "robbery cases")
+
+#Plot aggravated_assault cases
+violent_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = aggravated_assault)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "robbery cases")
+
+#Plot ot_assault cases
+violent_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = ot_assault)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = violent_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "robbery cases")
+
+```
+
+
+```{r}
+violent_cases <- 
+  violent_cases %>% 
+  mutate(under_21 = if_else(days_to_21 < 0, 0, 1)) 
+
+lm(manslaughter ~ days_to_21 + under_21, data = violent_cases) %>% 
+  tidy()
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
