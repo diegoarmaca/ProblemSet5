@@ -1,18 +1,23 @@
 ---
-title: "ProblemSet5"
-author: "Diego Mamanche Castellanos"
-date: "04/04/2020"
-output: pdf_document
+title: "Problemset5"
+author: "Sharon Allman, Diego Mamanche Castellanos & Ke-Li Chiu"
+date: "11/04/2020"
+output:
+  pdf_document:
+    latex_engine: xelatex
+abstract: "Abstract ....."
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, include = TRUE)
 ```
 
 ```{r message=FALSE}
 #import libraries
 library(broom)
 library(tidyverse)
+library(gridExtra)
+library(pastecs)
 
 
 setwd("~/Experimental Design for Data Science/ProblemSet5")
@@ -32,7 +37,7 @@ drinking_19_to_23 <- filter(drinking, days_to_21 > -730 & days_to_21 < 730)
 
 drinking_19_to_23 %>% 
   ggplot(aes(x = days_to_21,
-             y = sex_offenses_r)) +
+             y = vandalism)) +
   geom_point(alpha = 0.2) +
   geom_smooth(data = drinking_19_to_23 %>% filter(days_to_21 < 0), 
               method='lm',
@@ -73,19 +78,16 @@ lm(felony ~ days_to_21 + under_21, data = drinking) %>%
   tidy()
 ```
 
-```{r}
-
-# input Stata file
-#library(foreign)
-#mydata <- read.dta("gavi.dta")
-
-```
-
+ # Violent cases
 
 ```{r}
 violent_cases <- select(drinking_19_to_23, days_to_21, murder, manslaughter, rape, robbery, aggravated_assault, ot_assault)
 
-violent_cases
+violent_cases <- 
+  violent_cases %>% 
+  mutate(under_21 = if_else(days_to_21 < 0, 0, 1)) 
+
+head(violent_cases)
 
 #Plot murder cases
 violent_cases %>% 
@@ -181,9 +183,6 @@ violent_cases %>%
 
 
 ```{r}
-violent_cases <- 
-  violent_cases %>% 
-  mutate(under_21 = if_else(days_to_21 < 0, 0, 1)) 
 
 lm(manslaughter ~ days_to_21 + under_21, data = violent_cases) %>% 
   tidy()
@@ -191,8 +190,339 @@ lm(manslaughter ~ days_to_21 + under_21, data = violent_cases) %>%
 
 ```{r}
 
+lm(rape ~ days_to_21 + under_21, data = violent_cases) %>% 
+  tidy()
 ```
 
+
+```{r include=TRUE, message=FALSE, fig.height = 5, fig.width = 1, warning=FALSE} 
+
+# Compute descriptive statistics - boxplots
+ggplot(violent_cases) +
+  aes(y = murder) +
+  geom_boxplot() +
+  labs(x = "", y = "murder cases (%)") -> p1
+ggplot(violent_cases) +
+  aes(y = rape) +
+  geom_boxplot() +
+  labs(x = "", y = "Low Income (%)") -> p2
+ggplot(violent_cases) +
+  aes(y = manslaughter) +
+  geom_boxplot() +
+  labs(x = "", y = "Visible minority (%)") -> p3
+grid1 <- grid.arrange(p1, p2, p3, ncol = 1, nrow = 3)
+grid1
+```
+
+```{r include=TRUE, message=FALSE, fig.height = 5, fig.width = 10, warning=FALSE}
+
+# Compute descriptive statistics - table
+tt1 <- ttheme_default()
+stats_table <- stat.desc(violent_cases)
+stats_table <- round(stats_table, 2)
+stats_table <- mutate(stats_table, stats = row.names(stats_table))
+#stats_table <- select(stats_table, stats, no_certificate_diploma_or_degree_2,
+#                      x18_to_64_years_percent, total_visible_minority_population)
+#colnames(stats_table) <- c("stats","No certificate","Low Income","Visible minority")
+grid2 <- grid.arrange(tableGrob(stats_table, theme = tt1, rows = NULL), ncol = 1, nrow = 1)
+```
+
+```{r include=TRUE, fig.height = 7, fig.width = 15, warning=FALSE}
+
+# Join the boxplots and the table 
+grid.arrange(arrangeGrob(grid1, ncol=2, nrow=1),
+         arrangeGrob(grid2, ncol=1, nrow=1), heights=c(30,1), widths=c(1,3), 
+         bottom = "Figure 1: Descriptive statistics of the data")
+```
+
+# Drugs cases
+
+```{r}
+drugs_cases <- select(drinking_19_to_23, days_to_21, cocaine_opio_sale_manuf, mj_sale_manuf, dang_non_narc_sale_manuf, cocaine_opio_posses, mj_posses, dang_non_narc_posses)
+
+drugs_cases <- 
+  drugs_cases %>% 
+  mutate(under_21 = if_else(days_to_21 < 0, 0, 1)) 
+
+head(drugs_cases)
+
+
+#Plot cocaine_opio_sale_manuf cases
+drugs_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = cocaine_opio_sale_manuf)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "cocaine_opio_sale_manuf cases")
+
+#Plot mj_sale_manuf cases
+drugs_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = mj_sale_manuf)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "mj_sale_manuf cases")
+
+#Plot dang_non_narc_sale_manuf cases
+drugs_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = dang_non_narc_sale_manuf)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "dang_non_narc_sale_manuf cases")
+
+#Plot cocaine_opio_posses cases
+drugs_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = cocaine_opio_posses)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "cocaine_opio_posses cases")
+
+#Plot mj_posses cases
+drugs_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = mj_posses)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "mj_posses cases")
+
+
+#Plot dang_non_narc_posses cases
+drugs_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = dang_non_narc_posses)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = drugs_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "dang_non_narc_posses cases")
+
+
+
+```
+
+# Alcohol Cases
+
+```{r}
+alcohol_cases <- select(drinking_19_to_23, days_to_21, dui, liquor_laws, drunkeness_pc, disorderly_cond, vagrancy)
+
+alcohol_cases <- 
+  alcohol_cases %>% 
+  mutate(under_21 = if_else(days_to_21 < 0, 0, 1)) 
+
+head(alcohol_cases)
+
+#Plot dui cases
+alcohol_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = dui)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = alcohol_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = alcohol_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "dui cases")
+
+#Plot liquor_laws cases
+alcohol_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = liquor_laws)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = alcohol_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = alcohol_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "liquor_laws cases")
+
+#Plot drunkeness_pc cases
+alcohol_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = drunkeness_pc)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = alcohol_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = alcohol_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "drunkeness_pc cases")
+
+#Plot disorderly_cond cases
+alcohol_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = disorderly_cond)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = alcohol_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = alcohol_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "disorderly_cond cases")
+
+#Plot vagrancy cases
+alcohol_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = vagrancy)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = alcohol_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = alcohol_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "vagrancy cases")
+
+
+```
+
+```{r}
+lm(vagrancy ~ days_to_21 + under_21, data = alcohol_cases) %>% 
+  tidy()
+```
+
+# Property cases
+
+```{r}
+property_cases <- select(drinking_19_to_23, days_to_21, burglary, larceny, mv_theft, stolen_prop_buy_rec_poss, vandalism)
+
+property_cases <- 
+  property_cases %>% 
+  mutate(under_21 = if_else(days_to_21 < 0, 0, 1)) 
+
+head(property_cases)
+
+#Plot burglary cases
+property_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = burglary)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = property_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = property_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "burglary cases")
+
+#Plot larceny cases
+property_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = larceny)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = property_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = property_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "larceny cases")
+
+#Plot mv_theft cases
+property_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = mv_theft)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = property_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = property_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = " mv_theft cases")
+
+#Plot stolen_prop_buy_rec_poss cases
+property_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = stolen_prop_buy_rec_poss)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = property_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = property_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "stolen_prop_buy_rec_poss cases")
+
+#Plot vandalism cases
+property_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = vandalism)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = property_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = property_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "vandalism cases")
+
+```
 
 ```{r}
 
@@ -209,16 +539,10 @@ lm(manslaughter ~ days_to_21 + under_21, data = violent_cases) %>%
 ```
 
 
-```{r}
-
+\pagebreak
+# Appendix A
+```{r include=TRUE, ref.label=knitr::all_labels(), echo = T, eval = F, tidy=TRUE, tidy.opts=list(width.cutoff=60), results='asis'}
 ```
 
-
-```{r}
-
-```
-
-
-```{r}
-
-```
+\pagebreak
+# References
