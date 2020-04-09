@@ -525,13 +525,210 @@ property_cases %>%
 ```
 
 ```{r}
+property_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = burglary)) +
+  geom_point(alpha = 0.2)
 
+lm(burglary ~ days_to_21 + under_21, data = property_cases) %>% 
+  tidy()
 ```
 
+# FBI other cases
 
 ```{r}
+fbi_other_cases <- select(drinking_19_to_23, days_to_21, arson, forgery_counterfit, fraud, embezelment, weapons, prostitution, sex_offenses, bookmaking, all_other_gambling, aga_family_child, curfew_loitering, runaways)
+
+fbi_other_cases <- 
+  fbi_other_cases %>% 
+  mutate(under_21 = if_else(days_to_21 < 0, 0, 1)) 
+
+head(fbi_other_cases)
+
+#Plot arson cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = arson)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "arson cases")
+
+#Plot forgery_counterfit cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = forgery_counterfit)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "forgery_counterfit cases")
+
+#Plot fraud cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = fraud)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "fraud cases")
+
+#Plot embezelment cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = embezelment)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "embezelment cases")
+
+#Plot weapons cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = weapons)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "weapons cases")
+
+#Plot prostitution cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = prostitution)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "prostitution cases")
+
+
+#Plot sex_offenses cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = sex_offenses)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "sex_offenses cases")
+
+#Plot bookmaking cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = bookmaking)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "bookmaking cases")
+
+#Plot all_other_gambling cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = all_other_gambling)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "all_other_gambling cases")
+
+#Plot aga_family_child cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = aga_family_child)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "aga_family_child cases")
+
+#Plot curfew_loitering cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = curfew_loitering)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "curfew_loitering cases")
+
+ 
+#Plot runaways cases
+fbi_other_cases %>% 
+  ggplot(aes(x = days_to_21,
+             y = runaways)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 < 0), 
+              method='lm',
+              color = "black") +
+  geom_smooth(data = fbi_other_cases %>% filter(days_to_21 >= 0), 
+              method='lm',
+              color = "black") +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "runaways cases")
 
 ```
+
 
 
 ```{r}
