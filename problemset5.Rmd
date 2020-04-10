@@ -162,7 +162,7 @@ violent_cases %>%
               color = "black") +
   theme_minimal() +
   labs(x = "days_to_21",
-       y = "robbery cases")
+       y = "aggravated_assault cases")
 
 #Plot ot_assault cases
 violent_cases %>% 
@@ -177,7 +177,7 @@ violent_cases %>%
               color = "black") +
   theme_minimal() +
   labs(x = "days_to_21",
-       y = "robbery cases")
+       y = "ot_assault cases")
 
 ```
 
