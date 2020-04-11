@@ -81,7 +81,7 @@ top4_crimes_19_to_23 <- select(top4_crimes_19_to_23, days_to_21, assault_r, rape
 
 top4_crimes_19_to_23 <- 
   top4_crimes_19_to_23 %>% 
-  mutate(under_21 = if_else(days_to_21 < 0, 0, 1)) 
+  mutate(over_21 = if_else(days_to_21 < 0, 0, 1)) 
 
 ```
 
@@ -117,8 +117,8 @@ tt1 <- ttheme_default()
 stats_table <- stat.desc(top4_crimes_19_to_23)
 stats_table <- round(stats_table, 2)
 stats_table <- mutate(stats_table, stats = row.names(stats_table))
-stats_table <- select(stats_table, stats, days_to_21, under_21, assault_r, rape_r, murder_r, arson_r)
-colnames(stats_table) <- c("stats","days_to_21 ","under_21","assault","rape","murder","arson")
+stats_table <- select(stats_table, stats, days_to_21, over_21, assault_r, rape_r, murder_r, arson_r)
+colnames(stats_table) <- c("stats","days_to_21 ","over_21","assault","rape","murder","arson")
 grid2 <- grid.arrange(tableGrob(stats_table, theme = tt1, rows = NULL), ncol = 1, nrow = 1)
 ```
 
@@ -159,6 +159,16 @@ Lack of instrumental variable
 ## Assault 
 
 ```{r assault, include=TRUE}
+
+top4_crimes_19_to_23 %>% 
+  ggplot(aes(x = days_to_21,
+             y = assault_r)) +
+  geom_point(alpha = 0.2) +
+  theme_minimal() +
+  labs(x = "days_to_21",
+       y = "Assault cases")
+
+
 #Plot assault cases
 top4_crimes_19_to_23 %>% 
   ggplot(aes(x = days_to_21,
@@ -175,7 +185,7 @@ top4_crimes_19_to_23 %>%
        y = "Assault cases")
 
 
-lm(assault_r ~ days_to_21 + under_21, data = top4_crimes_19_to_23) %>% 
+lm(assault_r ~ days_to_21 + over_21, data = top4_crimes_19_to_23) %>% 
   tidy()
 
 ```
@@ -198,7 +208,7 @@ top4_crimes_19_to_23 %>%
        y = "Rape cases")
 
 
-lm(rape_r ~ days_to_21 + under_21, data = top4_crimes_19_to_23) %>% 
+lm(rape_r ~ days_to_21 + over_21, data = top4_crimes_19_to_23) %>% 
   tidy()
 
 ```
@@ -222,7 +232,7 @@ top4_crimes_19_to_23 %>%
        y = "Murder cases")
 
 
-lm(murder_r ~ days_to_21 + under_21, data = top4_crimes_19_to_23) %>% 
+lm(murder_r ~ days_to_21 + over_21, data = top4_crimes_19_to_23) %>% 
   tidy()
 
 ```
@@ -246,7 +256,7 @@ top4_crimes_19_to_23 %>%
        y = "Arson cases")
 
 
-lm(arson_r ~ days_to_21 + under_21, data = top4_crimes_19_to_23) %>% 
+lm(arson_r ~ days_to_21 + over_21, data = top4_crimes_19_to_23) %>% 
   tidy()
 
 ```
