@@ -122,12 +122,11 @@ colnames(stats_table) <- c("stats","days_to_21 ","under_21","assault","rape","mu
 grid2 <- grid.arrange(tableGrob(stats_table, theme = tt1, rows = NULL), ncol = 1, nrow = 1)
 ```
 
-```{r include=TRUE, fig.height = 7, fig.width = 10, warning=FALSE}
+```{r include=TRUE, fig.height = 5, fig.width = 10, warning=FALSE}
 
 # Join the boxplots and the table 
 grid.arrange(arrangeGrob(grid1, ncol=1, nrow=1),
-         arrangeGrob(grid2, ncol=1, nrow=1), heights=c(4,2), widths=c(1,2), 
-         bottom = "Figure 1: Descriptive statistics of the data")
+         arrangeGrob(grid2, ncol=1, nrow=1), heights=c(15,1), widths=c(1,2), bottom = "Figure 1: Descriptive statistics of the data")
 ```
 
 
