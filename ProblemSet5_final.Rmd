@@ -50,21 +50,14 @@ This study intend to confirm [...]
 
 # Dataset Description and Data Cleaning
 
-The dataset is the replication data of The Minimum Legal Drinking Age and Crime by Christopher Carpenter and Carlos Dobkin (2015). The dataset contains 1461 observations and 144 variables. The observation is arrestee’s age in days relative to 21 on the day being arrested ranging from 17 to 24. For example, 0 indicates that the arrestee is a month away from turn 21, 60 indicates that the arrestee is 21 and two months old and 0 means the arrestee is arrested on their 21st birthday. The crimes data retrieved from California’s Monthly Arrest and Citation Register dated from 1979 to 2006, containing major crime types categorized by FBI: violent crime, alcohol-related offenses, property crime, illegal drug possession or sale, and all other offenses. The dataset contains the counts of arrests as well the arrest rates per 10,000 person-years for each crime for each observation. 
 
+The dataset is the replication data of The Minimum Legal Drinking Age and Crime by Christopher Carpenter and Carlos Dobkin (2015). The dataset contains 1461 observations and 144 variables. The observation is arrestee’s age in days relative to 21 on the day being arrested ranging from 17 to 24. For example, 30 indicates that the arrestee is a month away from turning 21, 60 indicates that the arrestee is 21 and two months old and 0 means the arrestee is arrested on their 21st birthday. The crimes data retrieved from California’s Monthly Arrest and Citation Register dated from 1979 to 2006, containing major crime types categorized by FBI: violent crime, alcohol-related offenses, property crime, illegal drug possession or sale, and all other offenses. The dataset contains the counts of arrests as well the arrest rates per 10,000 person-years for each crime for each observation. 
 
-
-# Method
-
- 
-To validate the impact of the Minimum Legal Drinking Age (MLDA) over crimes, we conducted Regression Discontinuity Design (RDD). According to the researchers in our reference study, after applying their research through several surveys to inmates and other techniques, they found the fifteen most affected crimes by alcohol consumption. For this study, we used the crimes classified as High-alcohol usage. Those are Assault, Rape, Arson, and Murder, based on the role alcohol plays when an offender commits a given crime. Then, 
+An additional variable over_21 is created  
 
  
 
-# Summary Statistics
- 
-
-The distribution of the High-alcohol usage crimes is shown in Figure 1.
+The distribution and descriptive statistics of the High-alcohol usage crimes is shown in Figure 1. 
 
 
 ```{r import_data}
@@ -81,7 +74,7 @@ top4_crimes_19_to_23 <- select(top4_crimes_19_to_23, days_to_21, assault_r, rape
 
 top4_crimes_19_to_23 <- 
   top4_crimes_19_to_23 %>% 
-  mutate(over_21 = if_else(days_to_21 < 0, 0, 1)) 
+  mutate(mlda_and_over = if_else(days_to_21 < 0, 0, 1)) 
 
 ```
 
@@ -117,17 +110,25 @@ tt1 <- ttheme_default()
 stats_table <- stat.desc(top4_crimes_19_to_23)
 stats_table <- round(stats_table, 2)
 stats_table <- mutate(stats_table, stats = row.names(stats_table))
-stats_table <- select(stats_table, stats, days_to_21, over_21, assault_r, rape_r, murder_r, arson_r)
-colnames(stats_table) <- c("stats","days_to_21 ","over_21","assault","rape","murder","arson")
+stats_table <- select(stats_table, stats, days_to_21, mlda_and_over, assault_r, rape_r, murder_r, arson_r)
+colnames(stats_table) <- c("stats","days_to_21 ","mlda_and_over","assault","rape","murder","arson")
 grid2 <- grid.arrange(tableGrob(stats_table, theme = tt1, rows = NULL), ncol = 1, nrow = 1)
 ```
 
-```{r include=TRUE, fig.height = 5, fig.width = 10, warning=FALSE}
+```{r include=TRUE, fig.height = 5, fig.width = 11, warning=FALSE}
 
 # Join the boxplots and the table 
 grid.arrange(arrangeGrob(grid1, ncol=1, nrow=1),
-         arrangeGrob(grid2, ncol=1, nrow=1), heights=c(15,1), widths=c(1,2), bottom = "Figure 1: Descriptive statistics of the data")
+         arrangeGrob(grid2, ncol=1, nrow=1), heights=c(15,1), widths=c(1,2), 
+         bottom = "Figure 1: Descriptive statistics of the data")
 ```
+
+# Method
+
+ 
+Because the purpose of this paper is to validate the impact of the Minimum Legal Drinking Age (MLDA) over the most alcohol influenced crimes, we conducted Regression Discontinuity Design (RDD). The RDD estimates impact around the eligibility cutoff, in our case MLDA, as the difference between the average outcome for units on the treated side (MLDA and over) of the eligibility cutoff and the average outcome of units on the untreated (under MLDA) side of the cutoff (MLDA).
+
+According to the researchers of our reference study, after applying their research through several surveys to inmates and other techniques, they found the fifteen most affected crimes by Alcohol consumption. For this investigation, we focused on the crimes classified as High-alcohol usage from the reference paper. These are Assault, Rape, Arson, and Murder, based on the role alcohol plays when an offender commits a given crime.
 
 
 
@@ -160,15 +161,6 @@ Lack of instrumental variable
 
 ```{r assault, include=TRUE}
 
-top4_crimes_19_to_23 %>% 
-  ggplot(aes(x = days_to_21,
-             y = assault_r)) +
-  geom_point(alpha = 0.2) +
-  theme_minimal() +
-  labs(x = "days_to_21",
-       y = "Assault cases")
-
-
 #Plot assault cases
 top4_crimes_19_to_23 %>% 
   ggplot(aes(x = days_to_21,
@@ -185,13 +177,14 @@ top4_crimes_19_to_23 %>%
        y = "Assault cases")
 
 
-lm(assault_r ~ days_to_21 + over_21, data = top4_crimes_19_to_23) %>% 
+lm(assault_r ~ days_to_21 + mlda_and_over, data = top4_crimes_19_to_23) %>% 
   tidy()
 
 ```
 ## Rape
 
 ```{r rape, include=TRUE}
+
 #Plot assault cases
 top4_crimes_19_to_23 %>% 
   ggplot(aes(x = days_to_21,
@@ -208,7 +201,7 @@ top4_crimes_19_to_23 %>%
        y = "Rape cases")
 
 
-lm(rape_r ~ days_to_21 + over_21, data = top4_crimes_19_to_23) %>% 
+lm(rape_r ~ days_to_21 + mlda_and_over, data = top4_crimes_19_to_23) %>% 
   tidy()
 
 ```
@@ -232,7 +225,7 @@ top4_crimes_19_to_23 %>%
        y = "Murder cases")
 
 
-lm(murder_r ~ days_to_21 + over_21, data = top4_crimes_19_to_23) %>% 
+lm(murder_r ~ days_to_21 + mlda_and_over, data = top4_crimes_19_to_23) %>% 
   tidy()
 
 ```
@@ -256,14 +249,14 @@ top4_crimes_19_to_23 %>%
        y = "Arson cases")
 
 
-lm(arson_r ~ days_to_21 + over_21, data = top4_crimes_19_to_23) %>% 
+lm(arson_r ~ days_to_21 + mlda_and_over, data = top4_crimes_19_to_23) %>% 
   tidy()
 
 ```
 
 \pagebreak
 # Appendix A
-```{r include=TRUE, ref.label=knitr::all_labels(), echo = T, eval = F, tidy=TRUE, tidy.opts=list(width.cutoff=60), results='asis'}
+```{r markdown_code, include=TRUE, ref.label=knitr::all_labels(), echo = T, eval = F, tidy=TRUE, tidy.opts=list(width.cutoff=60), results='asis'}
 ```
 
 \pagebreak
