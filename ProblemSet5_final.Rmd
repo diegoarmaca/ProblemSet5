@@ -67,7 +67,8 @@ head(drinking)
 ```{r create top4_crimes_19_to_23}
 #Create a dataframe with the High-alcohol usage crimes 
 top4_crimes_19_to_23 <- filter(drinking, days_to_21 > -730 & days_to_21 < 730)
-top4_crimes_19_to_23 <- select(top4_crimes_19_to_23, days_to_21, assault_r, rape_r, murder_r, arson_r)
+top4_crimes_19_to_23 <- select(top4_crimes_19_to_23, days_to_21, 
+                               assault_r, rape_r, murder_r, arson_r)
 #Create the dummy variable
 top4_crimes_19_to_23 <- 
   top4_crimes_19_to_23 %>% 
@@ -104,7 +105,8 @@ tt1 <- ttheme_default()
 stats_table <- stat.desc(top4_crimes_19_to_23)
 stats_table <- round(stats_table, 2)
 stats_table <- mutate(stats_table, stats = row.names(stats_table))
-stats_table <- select(stats_table, stats, days_to_21, mlda_and_over, assault_r, rape_r, murder_r, arson_r)
+stats_table <- select(stats_table, stats, days_to_21, mlda_and_over, 
+                      assault_r, rape_r, murder_r, arson_r)
 colnames(stats_table) <- c("stats","days_to_21 ","mlda_and_over","assault","rape","murder","arson")
 grid2 <- grid.arrange(tableGrob(stats_table, theme = tt1, rows = NULL), ncol = 1, nrow = 1)
 ```
@@ -282,48 +284,47 @@ Table 4. Result of linear regression that estimates the effect of legal access t
 
 \pagebreak
 # References
+Baptiste Auguie (2017). gridExtra: Miscellaneous Functions for "Grid" Graphics. R package version 2.3. https://CRAN.R-project.org/package=gridExtra 
 
+Billings, S. B. (2010). Local Option and Crime: A Quasi-Experimental Approach to Evaluating County Alcohol Policies. SSRN Electronic Journal. doi: 10.2139/ssrn.1542726 
+
+Carpenter, C., & Dobkin, C. (2015). The Minimum Legal Drinking Age and Crime. Review of Economics and Statistics, 97(2), 521–524. doi: 10.1162/rest_a_00489 
+
+Corman, H., & Mocan, N. (2015). Alcohol Consumption, Deterrence and Crime in New York City. Journal of Labor Research, 36(2), 103–128. doi: 10.1007/s12122-015-9201-4 
 
 David Hugh-Jones (2020). huxable: Easily Create and Style Tables for LaTeX, HTML and Other Formats. R package version 4.7.1. https://cran.r-project.org/web/packages/huxtable 
 
-  
+Gertler, P. J. (2016). Impact evaluation in practice. Washington: World Bank. 
 
 Hadley Wickham and Lionel Henry (2019). tidyr: Tidy Messy Data. R package version 1.0.0. 
 
 https://CRAN.R-project.org/package=tidyr 
-
   
 
 Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2018). dplyr: A Grammar of Data Manipulation. R package version 
 
   0.7.6. https://CRAN.R-project.org/package=dplyr 
 
-  
+Long JA (2019). _jtools: Analysis and Presentation of Social Scientific Data_. R package version 2.0.1, <URL: https://cran.r-project.org/package=jtools>. 
+
+Peterson, L. (2015, February 25). The drinking age: The ethics behind change. Santa Clara University. https://www.scu.edu/the-big-q/the-big-q-blog/the-drinking-age-the-ethics-behind-change.html 
 
 R Core Team (2019). R: A language and environment for statistical computing.   
 
-  
 
 R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.  
 
-  
+The Drinking Age, Alcohol Consumption, and Crime. (n.d.). Retrieved April 8, 2020, from https://conference.nber.org/conferences/2008/si2008/CRI/dobkin.pdf 
 
 Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software, 
 
 4(43), 1686, https://doi.org/10.21105/joss.01686 
 
-  
-
 Wickham H (2016). ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York. ISBN 978-3-319-24277-4, https://ggplot2.tidyverse.org. 
 
   
+Yihui Xie (2019). knitr: A General-Purpose Package for Dynamic Report Generation in R. R package version 1.25. 
 
-Yihui Xie (2019). knitr: A General-Purpose Package for Dynamic Report Generation in R. R 
+Yihui Xie (2015) Dynamic Documents with R and knitr. 2nd edition. Chapman and Hall/CRC. ISBN 978-1498716963 
 
-package version 1.25. 
-
-  
-
-Yihui Xie (2015) Dynamic Documents with R and knitr. 2nd edition. Chapman and Hall/CRC. 
-
-ISBN 978-1498716963 
+Youth crimes spike immediately after drinking age. (2016, August 31). Retrieved April 8, 2020, from https://www.sciencedaily.com/releases/2016/08/160831102834.htm 
